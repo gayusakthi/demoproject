@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer: An Electronic Machine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Afacad+Flux:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: #cbd5e1;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Afacad Flux', sans-serif;
+        }
+
+        /* The Deck Wrapper that gets scaled by JavaScript */
+        #deck {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            transform-origin: center center;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            background-color: #f8fafc;
+            overflow: hidden;
+        }
+
+        /* Slide Container Rules */
+        .slide-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out;
+            background-color: #f8fafc;
+        }
+
+        .slide-container.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Typography */
+        h1, h2, h3, .slide-title {
+            font-family: 'Comfortaa', cursive;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        p, li, .subtitle {
+            font-family: 'Afacad Flux', sans-serif;
+            color: #1e293b;
+        }
+
+        .slide-title {
+            font-size: 50px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .content-area {
+            display: flex;
+            flex-grow: 1;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Title Slide */
+        .title-slide {
+            background-color: #dcfd8b;
+            text-align: center;
+        }
+        .title-slide h1 { font-size: 100px; margin-bottom: 25px; line-height: 1.2; }
+        .title-slide .subtitle { font-size: 45px; font-weight: 500; }
+
+        /* Two Column Layouts */
+        .two-column {
+            display: flex;
+            gap: 50px;
+            width: 100%;
+            align-items: center;
+            height: 100%;
+        }
+        .two-column.reverse { flex-direction: row-reverse; }
+        .text-column {
+            flex: 1;
+            background-color: #fdd5bd;
+            padding: 45px;
+            border-radius: 35px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+        .text-column p { font-size: 30px; margin-bottom: 20px; line-height: 1.5; }
+        .image-column {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        .image-wrapper {
+            width: 100%;
+            height: 480px;
+            border-radius: 35px;
+            background-color: white;
+            overflow: hidden;
+            border: 8px solid white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+        .image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .image-wrapper.contain-img img { object-fit: contain; padding: 20px;}
+
+        /* Image Link Wrappers */
+        .image-wrapper a, .image-container a { display: block; width: 100%; height: 100%; }
+        .tile a, .pioneer-tile a { display: block; text-align: center; transition: transform 0.2s; }
+        .tile a:hover, .pioneer-tile a:hover { transform: scale(1.05); }
+
+        /* Tiled Layouts */
+        .tiled-content {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            align-items: stretch;
+            height: 520px;
+        }
+        .tile, .pioneer-tile {
+            flex: 1;
+            border-radius: 35px;
+            padding: 30px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+        .pioneer-tile { text-align: center; align-items: center; }
+        .pioneer-tile img {
+            width: 160px; height: 160px; border-radius: 50%; object-fit: cover; 
+            border: 6px solid white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .tile h3, .pioneer-tile h3 { font-size: 34px; margin: 0 0 15px 0; }
+
+        /* Bleed Image Layout */
+        .bleed-image-layout {
+            align-items: start;
+            display: grid;
+            gap: 0;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            padding: 0;
+            background-color: #bc84ee;
+        }
+        .content-container { padding: 70px; display: flex; flex-direction: column; justify-content: center; height: 720px; }
+        .bleed-image-layout .slide-title { color: white; margin-bottom: 30px; font-size: 60px;}
+        .bleed-image-layout .bleed-text { font-size: 32px; line-height: 1.5; color: white; }
+        .image-container { height: 720px; width: 100%; overflow: hidden; }
+        .bleed-image-side { height: 720px; width: 100%; object-fit: cover; display: block; border-radius: 0 30px 30px 0; }
+
+        /* Section & End Slides */
+        .section-title-slide { background-color: #ff823a; text-align: center; }
+        .section-title-slide h2 { color: white; font-size: 100px; margin-bottom: 25px;}
+        .section-title-slide p { color: white; font-size: 45px;}
+
+        /* Quiz Styling */
+        .quiz-container { display: flex; gap: 30px; width: 100%; justify-content: center; height: 400px; }
+        .quiz-card {
+            flex: 1;
+            background-color: white;
+            border: 8px solid #cbd5e1;
+            border-radius: 30px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .quiz-card h3 { font-size: 32px; color: #1e293b; margin-bottom: 20px;}
+        .reveal-btn {
+            background-color: #1e293b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 24px;
+            font-family: 'Comfortaa', cursive;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            width: 100%;
+        }
+        .reveal-btn:hover { transform: scale(1.05); }
+        .quiz-answer {
+            display: none;
+            background-color: #dcfd8b;
+            color: #1e293b;
+            width: 100%;
+            padding: 20px;
+            border-radius: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            font-family: 'Comfortaa', cursive;
+            animation: popIn 0.4s ease-out forwards;
+        }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* Presentation Controls */
+        #controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .nav-btn:hover { color: #dcfd8b; transform: scale(1.2); }
+        .nav-btn:disabled { color: #64748b; cursor: not-allowed; transform: none; }
+        #progress { color: white; font-size: 24px; font-weight: bold; font-family: 'Comfortaa', cursive; min-width: 80px; text-align: center;}
+    </style>
+</head>
+<body>
+
+    <!-- The Scalable Deck Wrapper -->
+    <div id="deck">
+
+        <!-- Slide 1: Title -->
+        <div class="slide-container title-slide active">
+            <h1>Computer:<br>An Electronic Machine</h1>
+            <div class="subtitle">Chapter 1 • Learning Objectives</div>
+        </div>
+
+        <!-- Slide 2: Advancement of Computers -->
+        <div class="slide-container">
+            <h2 class="slide-title">Advancement of Computers</h2>
+            <div class="content-area">
+                <div class="two-column">
+                    <div class="text-column">
+                        <p>Computers have evolved significantly over the decades since they originated. Older computers were very large and slow.</p>
+                        <p>Gradually, the size of computers became <strong>smaller</strong> but their speed became <strong>faster!</strong></p>
+                        <p style="background: white; padding: 20px; border-radius: 20px; border-left: 8px solid #ff823a; margin-top: 30px;">
+                            <i class="fa-solid fa-lightbulb" style="color: #ff823a; font-size: 30px; margin-right: 10px;"></i> <strong>Fact File:</strong><br>In 2015, Apple reduced computer size drastically with the launch of the Apple Watch!
+                        </p>
+                    </div>
+                    <div class="image-column">
+                        <div class="image-wrapper" style="border-color: #ff823a;">
+                            <a href="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80" target="_blank" title="Click to view full image">
+                                <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80" alt="Modern computer">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Early Calculating Devices -->
+        <div class="slide-container">
+            <h2 class="slide-title">Early Calculating Devices</h2>
+            <div class="content-area">
+                <div class="tiled-content">
+                    <div class="tile" style="background-color: #dcfd8b;">
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/a/af/Abacus_6.jpg" target="_blank" title="Click to view full image">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Abacus_6.jpg/800px-Abacus_6.jpg" alt="Abacus" style="width: 100%; height: 180px; object-fit: cover; border-radius: 20px; border: 4px solid white; margin-bottom: 15px; background: white;">
+                        </a>
+                        <h3>The Abacus</h3>
+                        <p style="font-size: 22px;">Invented ~5000 years ago in China! Uses a wooden frame divided into <strong>Heaven</strong> (2 beads) and <strong>Earth</strong> (5 beads).</p>
+                    </div>
+                    <div class="tile" style="background-color: #bc84ee; color: white;">
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/8/80/Arts_et_Metiers_Pascaline_dsc03869.jpg" target="_blank" title="Click to view full image">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Arts_et_Metiers_Pascaline_dsc03869.jpg/800px-Arts_et_Metiers_Pascaline_dsc03869.jpg" alt="Pascaline" style="width: 100%; height: 180px; object-fit: cover; border-radius: 20px; border: 4px solid white; margin-bottom: 15px; background: white;">
+                        </a>
+                        <h3 style="color: white;">Pascaline</h3>
+                        <p style="font-size: 22px; color: white;">Invented in 1642 by Blaise Pascal to help his father. It used gears, dials, and wheels for addition and subtraction.</p>
+                    </div>
+                    <div class="tile" style="background-color: #fdd5bd;">
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/1/1a/Leibniz_Stepped_Reckoner.jpg" target="_blank" title="Click to view full image">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Leibniz_Stepped_Reckoner.jpg/800px-Leibniz_Stepped_Reckoner.jpg" alt="Leibniz Calculator" style="width: 100%; height: 180px; object-fit: cover; border-radius: 20px; border: 4px solid white; margin-bottom: 15px; background: white;">
+                        </a>
+                        <h3>Leibniz Calculator</h3>
+                        <p style="font-size: 22px;">Invented in 1694. It was the first mechanical calculator that could perform +, -, ×, and ÷ using repeated addition.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Pioneers of Computers -->
+        <div class="slide-container">
+            <h2 class="slide-title">The Pioneers of Computers</h2>
+            <div class="content-area">
+                <div class="tiled-content">
+                    <div class="pioneer-tile" style="background-color: #fdd5bd;">
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/6/6b/Charles_Babbage_-_1860.jpg" target="_blank" title="Click to view full image">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Charles_Babbage_-_1860.jpg/400px-Charles_Babbage_-_1860.jpg" alt="Charles Babbage" style="background: white;">
+                        </a>
+                        <h3>Charles Babbage</h3>
+                        <p style="font-weight:bold; color:#ea580c; margin-bottom:10px; font-size: 22px;">"Father of Computer"</p>
+                        <p style="font-size: 20px;">Invented the <strong>Analytical Engine</strong> in 1833. Modern computers are based on his amazing five-unit design!</p>
+                    </div>
+                    <div class="pioneer-tile" style="background-color: #dcfd8b;">
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/a/a4/Ada_Lovelace_portrait.jpg" target="_blank" title="Click to view full image">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/400px-Ada_Lovelace_portrait.jpg" alt="Ada Lovelace" style="background: white;">
+                        </a>
+                        <h3>Lady Ada Lovelace</h3>
+                        <p style="font-weight:bold; color:#16a34a; margin-bottom:10px; font-size: 22px;">"First Programmer"</p>
+                        <p style="font-size: 20px;">Wrote the first computer program. The early programming language 'Ada' was named to honor her.</p>
+                    </div>
+                    <div class="pioneer-tile" style="background-color: #bae6fd;">
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/4/44/Herman_Hollerith.jpg" target="_blank" title="Click to view full image">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Herman_Hollerith.jpg/400px-Herman_Hollerith.jpg" alt="Herman Hollerith" style="background: white;">
+                        </a>
+                        <h3>Herman Hollerith</h3>
+                        <p style="font-weight:bold; color:#0284c7; margin-bottom:10px; font-size: 22px;">"Tabulating Machine"</p>
+                        <p style="font-size: 20px;">Invented an electromechanical machine using punched cards to quickly process the 1890 U.S. Census!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: 1st Generation -->
+        <div class="slide-container">
+            <h2 class="slide-title">1st Generation (1940-1956)</h2>
+            <div class="content-area">
+                <div class="two-column">
+                    <div class="text-column" style="background-color: #bc84ee; color: white;">
+                        <h3 style="font-size: 46px; margin-bottom: 20px; color: white;">Vacuum Tubes</h3>
+                        <ul style="font-size: 32px; line-height: 1.5; color: white; padding-left: 30px;">
+                            <li>Used fragile <strong>Vacuum Tubes</strong> for circuitry.</li>
+                            <li>They were very large, heavy, and produced a lot of heat.</li>
+                            <li>Used <strong>punched cards</strong> and paper tapes for input.</li>
+                            <li><strong>Examples:</strong> ENIAC, EDVAC, UNIVAC.</li>
+                        </ul>
+                    </div>
+                    <div class="image-column">
+                        <div class="image-wrapper contain-img" style="border-color: #bc84ee;">
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/f/f6/Vacuum_tubes.jpg" target="_blank" title="Click to view full image">
+                                <img alt="Vacuum Tubes" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Vacuum_tubes.jpg/800px-Vacuum_tubes.jpg">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: 2nd Generation -->
+        <div class="slide-container">
+            <h2 class="slide-title">2nd Generation (1956-1963)</h2>
+            <div class="content-area">
+                <div class="two-column reverse">
+                    <div class="text-column" style="background-color: #ff823a; color: white;">
+                        <h3 style="font-size: 46px; margin-bottom: 20px; color: white;">Transistors</h3>
+                        <ul style="font-size: 32px; line-height: 1.5; color: white; padding-left: 30px;">
+                            <li>Used <strong>Transistors</strong> instead of heavy vacuum tubes.</li>
+                            <li>Computers became drastically smaller, faster, and more reliable.</li>
+                            <li>Used magnetic tapes for data storage.</li>
+                            <li><strong>Languages:</strong> COBOL, BASIC, FORTRAN.</li>
+                        </ul>
+                    </div>
+                    <div class="image-column">
+                        <div class="image-wrapper contain-img" style="border-color: #ff823a;">
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/2/21/Transistor_To-92_PNP.jpg" target="_blank" title="Click to view full image">
+                                <img alt="Transistors" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Transistor_To-92_PNP.jpg/800px-Transistor_To-92_PNP.jpg">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: 3rd Generation -->
+        <div class="slide-container">
+            <h2 class="slide-title">3rd Generation (1964-1971)</h2>
+            <div class="content-area">
+                <div class="two-column">
+                    <div class="text-column" style="background-color: #dcfd8b;">
+                        <h3 style="font-size: 46px; margin-bottom: 20px;">Integrated Circuits</h3>
+                        <ul style="font-size: 32px; line-height: 1.5; padding-left: 30px;">
+                            <li>Used <strong>Integrated Circuits (ICs)</strong>, known as Silicon chips.</li>
+                            <li>Many miniaturized transistors were placed on a single chip.</li>
+                            <li>Introduced <strong>keyboards and monitors</strong> for the first time!</li>
+                            <li><strong>Examples:</strong> IBM 370, Altair.</li>
+                        </ul>
+                    </div>
+                    <div class="image-column">
+                        <div class="image-wrapper" style="border-color: #dcfd8b;">
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/e/e0/Integrated_Circuit_Chip.jpg" target="_blank" title="Click to view full image">
+                                <img alt="Integrated Circuit" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Integrated_Circuit_Chip.jpg/800px-Integrated_Circuit_Chip.jpg">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: 4th Generation -->
+        <div class="slide-container">
+            <h2 class="slide-title">4th Generation (1971-Present)</h2>
+            <div class="content-area">
+                <div class="two-column reverse">
+                    <div class="text-column" style="background-color: #bae6fd;">
+                        <h3 style="font-size: 46px; margin-bottom: 20px;">Microprocessors</h3>
+                        <ul style="font-size: 32px; line-height: 1.5; padding-left: 30px;">
+                            <li>Uses <strong>Microprocessors (VLSI)</strong>. A single chip contains a whole CPU!</li>
+                            <li>Size became small enough to fit on a desk (Personal Computers).</li>
+                            <li>Introduced the mouse and magnetic disks.</li>
+                            <li><strong>Languages:</strong> C++, PHP, Python.</li>
+                        </ul>
+                    </div>
+                    <div class="image-column">
+                        <div class="image-wrapper contain-img" style="border-color: #bae6fd;">
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/c/c5/Intel_80486DX2_bottom.jpg" target="_blank" title="Click to view full image">
+                                <img alt="Microprocessor" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Intel_80486DX2_bottom.jpg/800px-Intel_80486DX2_bottom.jpg">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: 5th Generation (Bleed Layout) -->
+        <div class="slide-container bleed-image-layout">
+            <div class="content-container">
+                <h2 class="slide-title">5th Generation:<br>Present & Beyond</h2>
+                <p class="bleed-text">The fifth generation uses the exciting technology of <strong>Artificial Intelligence (AI)</strong>.</p>
+                <ul class="bleed-text" style="list-style: none; padding: 0; margin-top: 20px;">
+                    <li style="margin-bottom: 20px;"><i class="fa-solid fa-robot"></i> Builds computers that mimic human behavior.</li>
+                    <li style="margin-bottom: 20px;"><i class="fa-solid fa-microphone"></i> Includes Voice and Speech Recognition.</li>
+                    <li style="margin-bottom: 20px;"><i class="fa-solid fa-gamepad"></i> Used in medical areas, games, and entertainment.</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <a href="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1600&q=80" target="_blank" title="Click to view full image">
+                    <img class="bleed-image-side" alt="Artificial Intelligence Robot" src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80">
+                </a>
+            </div>
+        </div>
+
+        <!-- Slide 10: Video Slide -->
+        <div class="slide-container">
+            <h2 class="slide-title">Watch & Learn!</h2>
+            <div class="content-area" style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                <div style="padding: 15px; background: #ff823a; border-radius: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);">
+                    <iframe width="960" height="540" src="https://www.youtube.com/embed/EDpwP3fEJ24?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="border-radius: 20px; display: block;"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Section Title -->
+        <div class="slide-container section-title-slide">
+            <h2>Quiz Time!</h2>
+            <p>Let's test our knowledge on all topics!</p>
+        </div>
+
+        <!-- Slide 12: Quiz Part 1 -->
+        <div class="slide-container">
+            <h2 class="slide-title">Quiz: Early History & Pioneers</h2>
+            <div class="content-area">
+                <div class="quiz-container">
+                    <div class="quiz-card" id="q1">
+                        <h3>Which early device is divided into "Heaven" and "Earth"?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q1')">Show Answer</button>
+                        <div class="quiz-answer">The Abacus</div>
+                    </div>
+                    <div class="quiz-card" id="q2">
+                        <h3>Who is known as the "Father of Computer"?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q2')" style="background-color: #bc84ee;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #ff823a;">Charles Babbage</div>
+                    </div>
+                    <div class="quiz-card" id="q3">
+                        <h3>Who is considered the world's first programmer?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q3')">Show Answer</button>
+                        <div class="quiz-answer">Lady Ada Lovelace</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Quiz Part 2 -->
+        <div class="slide-container">
+            <h2 class="slide-title">Quiz: Computer Generations (1-3)</h2>
+            <div class="content-area">
+                <div class="quiz-container">
+                    <div class="quiz-card" id="q4" style="border-color: #bc84ee;">
+                        <h3>What technology powered 1st Generation computers?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q4')" style="background-color: #bc84ee;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #ff823a;">Vacuum Tubes</div>
+                    </div>
+                    <div class="quiz-card" id="q5" style="border-color: #ff823a;">
+                        <h3>What replaced Vacuum Tubes in the 2nd Generation?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q5')" style="background-color: #ff823a;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #bc84ee;">Transistors</div>
+                    </div>
+                    <div class="quiz-card" id="q6" style="border-color: #dcfd8b;">
+                        <h3>Which generation introduced Integrated Circuits (ICs)?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q6')" style="background-color: #16a34a;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #1e293b;">3rd Generation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 14: Quiz Part 3 -->
+        <div class="slide-container">
+            <h2 class="slide-title">Quiz: Advanced Generations & Facts</h2>
+            <div class="content-area">
+                <div class="quiz-container">
+                    <div class="quiz-card" id="q7" style="border-color: #0284c7;">
+                        <h3>Which machine did Herman Hollerith invent?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q7')" style="background-color: #0284c7;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #fdd5bd; color: #1e293b;">Tabulating Machine</div>
+                    </div>
+                    <div class="quiz-card" id="q8" style="border-color: #bae6fd;">
+                        <h3>Which generation uses Microprocessors (VLSI)?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q8')" style="background-color: #0ea5e9;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #0284c7; color: white;">4th Generation</div>
+                    </div>
+                    <div class="quiz-card" id="q9" style="border-color: #ff823a;">
+                        <h3>What does 5th Generation computing focus on?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q9')" style="background-color: #ff823a;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #bc84ee; color: white;">Artificial Intelligence (AI)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Quiz Part 4 (Bonus) -->
+        <div class="slide-container">
+            <h2 class="slide-title">Quiz: Bonus Round!</h2>
+            <div class="content-area">
+                <div class="quiz-container">
+                    <div class="quiz-card" id="q10" style="border-color: #bc84ee;">
+                        <h3>Which early machine was designed by Blaise Pascal?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q10')" style="background-color: #bc84ee;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #ff823a;">Pascaline</div>
+                    </div>
+                    <div class="quiz-card" id="q11" style="border-color: #dcfd8b;">
+                        <h3>What does "AI" stand for in the 5th Gen?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q11')" style="background-color: #16a34a;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #1e293b; color: white; font-size: 24px;">Artificial Intelligence</div>
+                    </div>
+                    <div class="quiz-card" id="q12" style="border-color: #ff823a;">
+                        <h3>Which generation brought us Keyboards & Monitors?</h3>
+                        <button class="reveal-btn" onclick="revealAnswer('q12')" style="background-color: #ff823a;">Show Answer</button>
+                        <div class="quiz-answer" style="background-color: #bc84ee; color: white;">3rd Generation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Keep Learning -->
+        <div class="slide-container section-title-slide" style="background-color: #bc84ee;">
+            <h2 style="font-size: 80px; margin-bottom: 25px;">Keep Learning<br>& Inspiring!</h2>
+            <p style="font-size: 40px; line-height: 1.5;"><i class="fa-solid fa-rocket" style="margin-right: 15px;"></i> You are all future inventors!</p>
+        </div>
+
+    </div>
+
+    <!-- Presentation Controls -->
+    <div id="controls">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" title="Previous Slide"><i class="fa-solid fa-chevron-left"></i></button>
+        <div id="progress">1 / 16</div>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)" title="Next Slide"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <script>
+        // Scaling Logic to perfectly fit the deck inside any screen size
+        function resizeDeck() {
+            const deck = document.getElementById('deck');
+            if (!deck) return; // Safety check
+            const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720) * 0.95;
+            deck.style.transform = `scale(${scale})`;
+        }
+
+        window.addEventListener('resize', resizeDeck);
+        resizeDeck(); // Call once on load
+
+        // Slide Navigation Logic
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide-container');
+        const progressText = document.getElementById('progress');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateSlideView() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlideIndex) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            
+            // Update Progress Text
+            progressText.innerText = `${currentSlideIndex + 1} / ${slides.length}`;
+            
+            // Update Button States
+            prevBtn.disabled = currentSlideIndex === 0;
+            nextBtn.disabled = currentSlideIndex === slides.length - 1;
+
+            // Optional: Pause YouTube video if leaving the video slide
+            const activeSlide = slides[currentSlideIndex];
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                if (!activeSlide.contains(iframe)) {
+                    // Send a message to pause the youtube player via postMessage
+                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                    // A brute-force fallback is resetting the src to stop the video
+                    const src = iframe.src;
+                    iframe.src = src; 
+                }
+            });
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            
+            // Boundary checks
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= slides.length) currentSlideIndex = slides.length - 1;
+            
+            updateSlideView();
+        }
+
+        // Quiz Logic
+        function revealAnswer(cardId) {
+            const card = document.getElementById(cardId);
+            const btn = card.querySelector('.reveal-btn');
+            const answer = card.querySelector('.quiz-answer');
+            
+            btn.style.display = 'none';
+            answer.style.display = 'block';
+        }
+
+        // Keyboard Controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        // Initialize first slide
+        updateSlideView();
+    </script>
+</body>
+</html>
