@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Epic Journey of Computers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #f8fafc;
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        /* Slide Container */
+        .slide {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 1000px;
+            min-height: 600px;
+            padding: 40px 50px;
+            position: relative;
+            border-top: 10px solid #8b5cf6;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slide:nth-child(even) { border-top-color: #ec4899; }
+        .slide:nth-child(3n) { border-top-color: #10b981; }
+        .slide:nth-child(4n) { border-top-color: #f59e0b; }
+
+        /* Typography */
+        h1 { font-family: 'Comfortaa', cursive; font-size: 56px; color: #1e293b; text-align: center; margin-bottom: 10px; }
+        h2 { font-family: 'Comfortaa', cursive; font-size: 38px; color: #334155; margin-top: 0; margin-bottom: 25px; border-bottom: 3px dashed #e2e8f0; padding-bottom: 15px; }
+        h3 { font-size: 26px; color: #475569; margin-bottom: 15px; }
+        p, li { font-size: 20px; color: #475569; line-height: 1.6; margin-bottom: 12px; }
+        ul { margin-top: 0; }
+
+        /* Layout */
+        .content-split {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+        }
+        .text-box { flex: 1; }
+        .icon-box {
+            flex: 0.8;
+            background: #f1f5f9;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 140px;
+            color: #94a3b8;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+        .grid-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+        .grid-card i { font-size: 50px; margin-bottom: 15px; color: #8b5cf6; }
+
+        /* 2x2 Grid for Computer Types */
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            flex: 1;
+        }
+        .type-card {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 8px solid #3b82f6;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .type-card h3 { margin-top: 0; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+        .type-card p { font-size: 18px; margin-bottom: 0; }
+
+        /* Quiz Specifics */
+        .quiz-item {
+            background: #f8fafc;
+            border-left: 6px solid #8b5cf6;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        .quiz-q { font-weight: 700; font-size: 22px; color: #1e293b; margin-bottom: 10px; }
+        details { cursor: pointer; }
+        summary { 
+            background: #e2e8f0; 
+            padding: 8px 16px; 
+            border-radius: 6px; 
+            display: inline-block; 
+            font-weight: bold;
+            color: #475569;
+            list-style: none;
+        }
+        summary:hover { background: #cbd5e1; }
+        details[open] summary { background: #10b981; color: white; margin-bottom: 10px; }
+        .quiz-a { font-weight: 700; font-size: 20px; color: #059669; margin-left: 10px; }
+
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-weight: bold;
+            color: #cbd5e1;
+            font-size: 18px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1 -->
+    <div class="slide" style="justify-content: center; align-items: center; background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 100%);">
+        <i class="fa-solid fa-laptop-code" style="font-size: 100px; color: #8b5cf6; margin-bottom: 20px;"></i>
+        <h1>The Epic Journey of Computers</h1>
+        <p style="font-size: 28px; font-weight: bold; color: #6366f1;">A Fun Learning Adventure for Grade 5!</p>
+        <div class="page-number">1</div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide">
+        <h2>1. The First Calculating Tools 🧮</h2>
+        <div class="content-split">
+            <div class="text-box">
+                <h3>The Abacus</h3>
+                <ul>
+                    <li>Invented in <strong>China around 3000 BC</strong>.</li>
+                    <li>It is the <strong>first mechanical calculating device</strong> in history.</li>
+                    <li>Made of a wooden frame divided into two parts: Heaven (upper) and Earth (lower).</li>
+                    <li>Uses sliding beads on rods to perform addition, subtraction, multiplication, and division.</li>
+                </ul>
+                <h3>Napier's Bones</h3>
+                <ul>
+                    <li>Invented by <strong>John Napier in 1617</strong>.</li>
+                    <li>A set of rectangular rods carved from animal bones or ivory.</li>
+                    <li>Used mainly for <strong>multiplying huge numbers</strong> very easily.</li>
+                </ul>
+            </div>
+            <div class="icon-box"><i class="fa-solid fa-calculator" style="color: #f43f5e;"></i></div>
+        </div>
+        <div class="page-number">2</div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide">
+        <h2>2. Gears, Wheels, and Punched Cards ⚙️</h2>
+        <div class="content-split">
+            <div class="icon-box"><i class="fa-solid fa-gear" style="color: #eab308;"></i></div>
+            <div class="text-box">
+                <h3>The Pascaline (1642)</h3>
+                <ul>
+                    <li>Invented by a French mathematician named <strong>Blaise Pascal</strong>.</li>
+                    <li>It was the very first <strong>mechanical adding machine</strong>.</li>
+                    <li>It worked using interlocking gears and dials (like the odometer in a car).</li>
+                </ul>
+                <h3>Leibniz Calculator (1673)</h3>
+                <ul>
+                    <li>Created by <strong>Gottfried Wilhelm Leibniz</strong>.</li>
+                    <li>It improved on the Pascaline. It could not only add and subtract, but also <strong>multiply and divide!</strong></li>
+                </ul>
+                <h3>Herman Hollerith (1890)</h3>
+                <ul>
+                    <li>He invented a machine that used <strong>Punched Cards</strong> to record and store data.</li>
+                    <li>His machine was used to count the US population (Census). His company later became <strong>IBM</strong>!</li>
+                </ul>
+            </div>
+        </div>
+        <div class="page-number">3</div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide">
+        <h2>3. The Brilliant Minds 🧠</h2>
+        <div class="grid-3">
+            <div class="grid-card">
+                <i class="fa-solid fa-lightbulb"></i>
+                <h3>Charles Babbage</h3>
+                <p>Designed the "Analytical Engine." He is known as the <strong>"Father of Computers"</strong> because his design had Input, Output, and Memory!</p>
+            </div>
+            <div class="grid-card">
+                <i class="fa-solid fa-code"></i>
+                <h3>George Boole</h3>
+                <p>Created <strong>Boolean Logic</strong>. He proved that logic can be reduced to just two values: <strong>True (1) or False (0)</strong>. Computers still use this to think today!</p>
+            </div>
+            <div class="grid-card">
+                <i class="fa-solid fa-brain"></i>
+                <h3>John Von Neumann</h3>
+                <p>He invented the <strong>"Stored Program Concept"</strong>. He suggested computers should store their programs and data inside the computer's memory!</p>
+            </div>
+        </div>
+        <div class="page-number">4</div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide">
+        <h2>4. First & Second Generations 🕰️</h2>
+        <div class="content-split">
+            <div class="text-box">
+                <h3>First Generation (1940-1956): Vacuum Tubes</h3>
+                <ul>
+                    <li>Used glass <strong>Vacuum Tubes</strong> for circuitry.</li>
+                    <li>They were <strong>enormous</strong>, taking up entire rooms!</li>
+                    <li>They generated a lot of heat and broke down often.</li>
+                    <li>Example: The ENIAC.</li>
+                </ul>
+                <h3>Second Generation (1956-1963): Transistors</h3>
+                <ul>
+                    <li>Vacuum tubes were replaced by <strong>Transistors</strong>.</li>
+                    <li>This made computers much <strong>smaller, faster, and cheaper</strong>.</li>
+                    <li>They used magnetic tapes for storing information.</li>
+                </ul>
+            </div>
+            <div class="icon-box"><i class="fa-solid fa-temperature-arrow-up" style="color: #ef4444;"></i></div>
+        </div>
+        <div class="page-number">5</div>
+    </div>
+
+    <!-- Slide 6 -->
+    <div class="slide">
+        <h2>5. Third & Fourth Generations 💻</h2>
+        <div class="content-split">
+            <div class="icon-box"><i class="fa-solid fa-microchip" style="color: #10b981;"></i></div>
+            <div class="text-box">
+                <h3>Third Generation (1964-1971): Integrated Circuits (IC)</h3>
+                <ul>
+                    <li>Many transistors were squished onto one tiny silicon chip called an <strong>Integrated Circuit (IC)</strong>.</li>
+                    <li>People started interacting with computers using <strong>Keyboards and Monitors</strong> instead of punched cards.</li>
+                </ul>
+                <h3>Fourth Generation (1971-Present): Microprocessors</h3>
+                <ul>
+                    <li>Thousands of ICs were built onto a single chip called a <strong>Microprocessor</strong>.</li>
+                    <li>This created the "Personal Computer" (PC) revolution!</li>
+                    <li>Led to the invention of laptops, smartphones, and the Internet.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="page-number">6</div>
+    </div>
+
+    <!-- Slide 7 -->
+    <div class="slide">
+        <h2>6. Fifth Generation (Present & Future) 🤖</h2>
+        <div class="content-split">
+            <div class="text-box">
+                <h3>Artificial Intelligence (AI)</h3>
+                <ul>
+                    <li>Fifth-generation computers are based on <strong>Artificial Intelligence (AI)</strong>.</li>
+                    <li>They are designed to mimic human thinking and reasoning.</li>
+                    <li>The goal is to create machines that can <strong>learn from experience</strong>, recognize speech, and make decisions.</li>
+                    <li>Examples include voice assistants (like Siri or Alexa), self-driving cars, and facial recognition technology!</li>
+                </ul>
+            </div>
+            <div class="icon-box"><i class="fa-solid fa-robot" style="color: #3b82f6;"></i></div>
+        </div>
+        <div class="page-number">7</div>
+    </div>
+
+    <!-- Slide 8 -->
+    <div class="slide">
+        <h2>7. Types of Computers 🖥️</h2>
+        <div class="grid-2x2">
+            <div class="type-card" style="border-left-color: #14b8a6;">
+                <h3><i class="fa-solid fa-laptop" style="color: #14b8a6;"></i> Microcomputers</h3>
+                <p>Small in size, not expensive, and consumer-friendly. Designed for personal use in homes, schools, and offices. <em>Examples: Desktops, Laptops, and Tablets.</em></p>
+            </div>
+            <div class="type-card" style="border-left-color: #f59e0b;">
+                <h3><i class="fa-solid fa-hospital-user" style="color: #f59e0b;"></i> Minicomputers</h3>
+                <p>Bigger than microcomputers and not meant for personal use. They have higher processing power and can support up to 200 users at once! <em>Used in: Hospitals, universities, and banks.</em></p>
+            </div>
+            <div class="type-card" style="border-left-color: #ec4899;">
+                <h3><i class="fa-solid fa-server" style="color: #ec4899;"></i> Mainframe Computers</h3>
+                <p>Big in size, highly powerful, and very costly! They have huge storage capacities and high speeds to deal with massive amounts of data.</p>
+            </div>
+            <div class="type-card" style="border-left-color: #8b5cf6;">
+                <h3><i class="fa-solid fa-meteor" style="color: #8b5cf6;"></i> Supercomputers</h3>
+                <p>The absolute fastest and most powerful computers on Earth! They are used for complex tasks that require massive calculations. <em>Used for: Weather forecasting and space research.</em></p>
+            </div>
+        </div>
+        <div class="page-number">8</div>
+    </div>
+
+    <!-- Slide 9 -->
+    <div class="slide">
+        <h2>Quiz Time! Challenge 1 🎯</h2>
+        <div class="quiz-item">
+            <div class="quiz-q">1. What ancient counting device used sliding beads on rods?</div>
+            <details><summary>Show Answer</summary><div class="quiz-a">The Abacus</div></details>
+        </div>
+        <div class="quiz-item">
+            <div class="quiz-q">2. Who is known as the "Father of Computers"?</div>
+            <details><summary>Show Answer</summary><div class="quiz-a">Charles Babbage</div></details>
+        </div>
+        <div class="quiz-item">
+            <div class="quiz-q">3. Which inventor created the "Stored Program Concept"?</div>
+            <details><summary>Show Answer</summary><div class="quiz-a">John Von Neumann</div></details>
+        </div>
+        <div class="page-number">9</div>
+    </div>
+
+    <!-- Slide 10 -->
+    <div class="slide">
+        <h2>Quiz Time! Challenge 2 🎯</h2>
+        <div class="quiz-item">
+            <div class="quiz-q">1. What huge, hot component was used in 1st Generation computers?</div>
+            <details><summary>Show Answer</summary><div class="quiz-a">Vacuum Tubes</div></details>
+        </div>
+        <div class="quiz-item">
+            <div class="quiz-q">2. What replaced Vacuum Tubes in the 2nd Generation to make computers smaller?</div>
+            <details><summary>Show Answer</summary><div class="quiz-a">Transistors</div></details>
+        </div>
+        <div class="quiz-item">
+            <div class="quiz-q">3. What did Herman Hollerith use to store data for the 1890 Census?</div>
+            <details><summary>Show Answer</summary><div class="quiz-a">Punched Cards</div></details>
+        </div>
+        <div class="page-number">10</div>
+    </div>
+
+    <!-- Slide 11 -->
+    <div class="slide">
+        <h2>Quiz Time! Challenge 3 🎯</h2>
+        <div class="quiz-item">
+            <div class="quiz-q">1. Laptops, tablets, and desktops belong to which category of computers?</div>
+            <details><summary>Show Answer</summary><div class="quiz-a">Microcomputers</div></details>
+        </div>
+        <div class="quiz-item">
+            <div class="quiz-q">2. Which type of computer can support up to 200 users at once in hospitals and banks?</div>
+            <details><summary>Show Answer</summary><div class="quiz-a">Minicomputers</div></details>
+        </div>
+        <div class="quiz-item">
+            <div class="quiz-q">3. What is the fastest and most powerful type of computer called?</div>
+            <details><summary>Show Answer</summary><div class="quiz-a">Supercomputers</div></details>
+        </div>
+        <div class="page-number">11</div>
+    </div>
+
+</body>
+</html>
