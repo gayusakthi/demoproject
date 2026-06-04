@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Computers Work - Grade 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&family=Afacad+Flux:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+/* THE SETUP */
+* { box-sizing: border-box; }
+
+body {
+    background-color: #333; /* Dark background for presenting */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Afacad Flux', sans-serif;
+    overflow: hidden; /* Hide scrollbars for presentation mode */
+}
+
+/* SLIDE CONTAINER (Acts like a PPT slide) */
+.slide-container {
+    background-color: #eee;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: none; /* Hidden by default, JS will show the active one */
+    flex-direction: column;
+    height: 720px;
+    width: 1280px;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* This makes the active slide visible */
+.slide-container.active {
+    display: flex;
+}
+
+.slide-container>* { position: relative; z-index: 1; }
+
+/* TYPOGRAPHY */
+h1, h2 { font-family: 'Comfortaa', cursive; color: #1e293b; margin: 0; }
+p, li, h3 { font-family: 'Afacad Flux', sans-serif; color: #000; }
+h3 { font-size: 32px; font-weight: 600; margin-bottom: 12px; margin-top: 5px; }
+p, li { font-weight: 400; font-size: 22px; line-height: 1.3; }
+
+.title-layout { width: 100%; text-align: center; }
+.title-layout h1 { font-weight: 700; font-size: 110px; line-height: 1.1; margin-bottom: 20px; }
+.title-layout .subtitle { font-size: 36px; color: #334155; font-weight: 500; }
+.slide-title { font-size: 52px; font-weight: 700; width: 100%; text-align: left; margin-bottom: 10px; padding-left: 20px; }
+
+.quiz-instruction { font-size: 22px; color: #64748b; width: 100%; text-align: left; padding-left: 20px; margin-bottom: 20px; font-style: italic; }
+
+/* LAYOUTS */
+.content-area { align-items: flex-start; display: flex; flex-direction: column; flex-grow: 1; justify-content: flex-start; width: 100%; }
+.two-column { display: flex; width: 100%; gap: 40px; height: 520px; align-items: center; }
+.two-column>div { flex-basis: 50%; flex-grow: 1; }
+.text-column { height: 100%; display: flex; }
+.image-column { display: flex; justify-content: center; align-items: center; height: 100%; }
+
+.content-box { border-radius: 40px; padding: 40px; width: 100%; display: flex; flex-direction: column; justify-content: center; }
+ul { list-style: none; padding: 0; margin: 0; }
+li { margin-bottom: 18px; position: relative; padding-left: 30px; }
+li::before { content: '⭐'; position: absolute; left: 0; top: 2px; font-size: 20px; }
+
+.tiled-content { display: flex; gap: 30px; width: 100%; align-items: stretch; height: 520px; padding: 0 10px; }
+.tile { flex: 1; border-radius: 40px; text-align: left; padding: 40px 30px; display: flex; flex-direction: column; transition: transform 0.2s ease; }
+.tile .icon { font-size: 56px; color: #1e293b; margin-bottom: 20px; }
+.tile h3 { margin: 0; padding: 10px 0; border-bottom: 2px solid rgba(0,0,0,0.1); margin-bottom: 15px; }
+.tile p { margin: 0; line-height: 1.4; font-size: 24px; }
+
+/* QUIZ STYLING */
+.tile.quiz-tile { cursor: pointer; }
+.tile.quiz-tile:hover { transform: translateY(-10px); }
+.tile.quiz-tile p { font-size: 26px; font-weight: 500; }
+.tile.quiz-tile .answer-container { margin-top: auto; text-align: center; }
+.tile.quiz-tile .answer { display: inline-block; font-size: 24px; font-weight: 700; color: #dc2626; background-color: rgba(255,255,255,0.9); padding: 15px 30px; border-radius: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); opacity: 0; transition: opacity 0.3s ease; }
+.tile.quiz-tile:hover .answer { opacity: 1; }
+
+.image-wrapper { width: 100%; max-width: 560px; height: 500px; border-radius: 40px; overflow: hidden; background-color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; font-size: 150px; }
+
+/* COLORS */
+.bg-purple { background-color: #e9d5ff; }
+.bg-blue { background-color: #bfdbfe; }
+.bg-yellow { background-color: #fef08a; }
+.tile-1 { background-color: #dcfd8bff; }
+.tile-2 { background-color: #bc84eeff; }
+.tile-3 { background-color: #ff823aff; }
+
+/* BLOBS */
+.blob { position: absolute; filter: blur(60px); z-index: 0; opacity: 0.5; }
+.blob-1 { top: -100px; left: -100px; width: 400px; height: 400px; background: #fbbf24; border-radius: 50%; }
+.blob-2 { bottom: -150px; right: -50px; width: 500px; height: 500px; background: #34d399; border-radius: 50%; }
+
+/* NAVIGATION HINT */
+.nav-hint { position: absolute; bottom: 20px; right: 20px; font-size: 18px; color: rgba(0,0,0,0.4); font-weight: bold; background: rgba(255,255,255,0.5); padding: 10px 20px; border-radius: 20px; z-index: 10; }
+    </style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide-container bg-yellow active" id="slide1">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="title-layout">
+        <h1>How Computers<br>Work!</h1>
+        <p class="subtitle">A fun guide for 3rd Graders 🚀</p>
+    </div>
+    <div class="nav-hint">Press Right Arrow ➔ or Spacebar to start!</div>
+</div>
+
+<!-- Slide 2: Intro -->
+<div class="slide-container" id="slide2">
+    <h2 class="slide-title">The Smart Machine 🧠</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="text-column">
+                <div class="content-box" style="background-color: #fdd5bdff;">
+                    <h3>Why is it so smart?</h3>
+                    <ul>
+                        <li>A computer is a machine that runs on electricity.</li>
+                        <li>It can do many things at once without complaining!</li>
+                        <li>It never gets tired, even if it works all day.</li>
+                        <li>It works super fast and saves us time.</li>
+                        <li>It never makes mistakes!</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="image-column">
+                <div class="image-wrapper" style="background-color: #bae6fd;">🤖💻</div>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 3: Parts 1 -->
+<div class="slide-container bg-purple" id="slide3">
+    <h2 class="slide-title">Main Parts of a Computer 🖥️</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile tile-1">
+                <div class="icon"><i class="fa-solid fa-desktop"></i></div>
+                <h3>Monitor</h3>
+                <p>It looks just like a television! The monitor shows you all the work you are doing on the computer, like drawings and games.</p>
+            </div>
+            <div class="tile tile-2">
+                <div class="icon"><i class="fa-regular fa-keyboard"></i></div>
+                <h3>Keyboard</h3>
+                <p>It has lots of buttons called "keys". You use it to type words, numbers, and special symbols into the computer.</p>
+            </div>
+            <div class="tile tile-3">
+                <div class="icon"><i class="fa-solid fa-computer-mouse"></i></div>
+                <h3>Mouse</h3>
+                <p>This is a pointing device. You use it to select, click, and open things on the screen. It has a left and right button.</p>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 4: CPU -->
+<div class="slide-container" id="slide4">
+    <h2 class="slide-title">The Brain: The CPU 💡</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="text-column">
+                <div class="content-box" style="background-color: #dcfd8bff;">
+                    <h3>Central Processing Unit</h3>
+                    <ul>
+                        <li><strong>CPU</strong> is the brain of the computer! It controls all the other parts.</li>
+                        <li><strong>MU (Memory Unit):</strong> Stores all your data and instructions.</li>
+                        <li><strong>ALU (Arithmetic & Logic Unit):</strong> Does all the math (addition, subtraction) and comparing.</li>
+                        <li><strong>CU (Control Unit):</strong> A manager that controls how all parts work together!</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="image-column">
+                <div class="image-wrapper" style="background-color: #fbcfe8;">🧠⚙️</div>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 5: Parts 2 -->
+<div class="slide-container bg-blue" id="slide5">
+    <h2 class="slide-title">Other Helpful Parts 🖨️</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile tile-1">
+                <div class="icon"><i class="fa-solid fa-print"></i></div>
+                <h3>Printer</h3>
+                <p>Want to hang your drawing on the wall? The printer puts text and pictures from the computer onto real paper!</p>
+            </div>
+            <div class="tile tile-2">
+                <div class="icon"><i class="fa-solid fa-headphones"></i></div>
+                <h3>Speakers & Headphones</h3>
+                <p>These let you hear! You use them to listen to music, sounds, and voices coming from the computer.</p>
+            </div>
+            <div class="tile tile-3">
+                <div class="icon"><i class="fa-solid fa-microphone"></i></div>
+                <h3>Microphone</h3>
+                <p>This lets you talk to the computer! You can use it to record your own voice and save sounds.</p>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 6: IPO Cycle -->
+<div class="slide-container" id="slide6">
+    <h2 class="slide-title">How It Works: The IPO Cycle 🎂</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile tile-1">
+                <div class="icon"><i class="fa-solid fa-arrow-right-to-bracket"></i></div>
+                <h3>1. Input</h3>
+                <p>This is what you put in. <br><br><strong>Cake Example:</strong> Flour, sugar, butter, and eggs!</p>
+            </div>
+            <div class="tile tile-2">
+                <div class="icon"><i class="fa-solid fa-gears"></i></div>
+                <h3>2. Process</h3>
+                <p>This is the work being done. <br><br><strong>Cake Example:</strong> Mixing and baking everything in the oven!</p>
+            </div>
+            <div class="tile tile-3">
+                <div class="icon"><i class="fa-solid fa-cake-candles"></i></div>
+                <h3>3. Output</h3>
+                <p>This is the final result. <br><br><strong>Cake Example:</strong> A yummy, freshly baked cake ready to eat!</p>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 7: IPO in action -->
+<div class="slide-container bg-purple" id="slide7">
+    <h2 class="slide-title">Computer IPO in Action ⚡</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="text-column">
+                <div class="content-box" style="background-color: #bc84eeff; color: #fff;">
+                    <h3 style="color: #fff;">Let's add 12 and 5!</h3>
+                    <ul>
+                        <li><strong>Input:</strong> You type "12", "5", and "+" using the keyboard.</li>
+                        <li><strong>Process:</strong> The CPU takes these numbers and adds them together quickly.</li>
+                        <li><strong>Output:</strong> The Monitor shows you the final answer: "17"!</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="image-column">
+                <div class="image-wrapper" style="background-color: #fef08a;">➕📝✅</div>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 8: Why useful -->
+<div class="slide-container" id="slide8">
+    <h2 class="slide-title">Why are Computers so Useful? ⭐</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="text-column">
+                <div class="content-box" style="background-color: #ff823aff;">
+                    <h3>Computer Superpowers:</h3>
+                    <ul>
+                        <li><strong>Speed:</strong> They work incredibly fast, much faster than humans!</li>
+                        <li><strong>Accuracy:</strong> They are perfect and don't make mistakes.</li>
+                        <li><strong>Diligence:</strong> They never get bored or sleepy, no matter how long they work.</li>
+                        <li><strong>Versatility:</strong> They can do many different types of jobs easily!</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="image-column">
+                <div class="image-wrapper" style="background-color: #bbf7d0;">🦸‍♂️⚡</div>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 9: Uses -->
+<div class="slide-container bg-blue" id="slide9">
+    <h2 class="slide-title">Where do we use them? 🌍</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile tile-1">
+                <div class="icon"><i class="fa-solid fa-school"></i></div>
+                <h3>Schools & Homes</h3>
+                <p>We use them to teach, learn, draw, write letters, play games, and watch fun movies!</p>
+            </div>
+            <div class="tile tile-2">
+                <div class="icon"><i class="fa-solid fa-hospital"></i></div>
+                <h3>Hospitals</h3>
+                <p>Doctors use computers to keep information about patients and to help make people feel better.</p>
+            </div>
+            <div class="tile tile-3">
+                <div class="icon"><i class="fa-solid fa-store"></i></div>
+                <h3>Shops & Banks</h3>
+                <p>People use them to make bills for shopping, pay money, and keep our money safe in the bank.</p>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 10: Quiz 1 -->
+<div class="slide-container bg-yellow" id="slide10">
+    <h2 class="slide-title">Quiz Time! - Part 1 📝</h2>
+    <div class="quiz-instruction">Hover your mouse over the cards below to magically reveal the answers! ✨</div>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile quiz-tile tile-1">
+                <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+                <p>Question 1:<br><br>What is known as the "brain" of the computer?</p>
+                <div class="answer-container"><div class="answer">CPU</div></div>
+            </div>
+            <div class="tile quiz-tile tile-2">
+                <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+                <p>Question 2:<br><br>Which computer part looks just like a TV screen?</p>
+                 <div class="answer-container"><div class="answer">Monitor</div></div>
+            </div>
+            <div class="tile quiz-tile tile-3">
+                <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+                <p>Question 3:<br><br>What 3-step cycle does a computer follow?</p>
+                 <div class="answer-container"><div class="answer">IPO Cycle</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 11: Quiz 2 -->
+<div class="slide-container bg-yellow" id="slide11">
+    <h2 class="slide-title">Quiz Time! - Part 2 📝</h2>
+    <div class="quiz-instruction">Hover your mouse over the cards below to magically reveal the answers! ✨</div>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile quiz-tile tile-1">
+                <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+                <p>Question 4:<br><br>Which part is used to type letters and numbers?</p>
+                <div class="answer-container"><div class="answer">Keyboard</div></div>
+            </div>
+            <div class="tile quiz-tile tile-2">
+                <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+                <p>Question 5:<br><br>What does the "I" in the IPO cycle stand for?</p>
+                <div class="answer-container"><div class="answer">Input</div></div>
+            </div>
+            <div class="tile quiz-tile tile-3">
+                <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+                <p>Question 6:<br><br>Which part prints your work on real paper?</p>
+                <div class="answer-container"><div class="answer">Printer</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 12: Quiz 3 -->
+<div class="slide-container bg-yellow" id="slide12">
+    <h2 class="slide-title">Quiz Time! - Part 3 📝</h2>
+    <div class="quiz-instruction">Hover your mouse over the cards below to magically reveal the answers! ✨</div>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile quiz-tile tile-1">
+                <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+                <p>Question 7:<br><br>Which part of the CPU does math (like addition)?</p>
+                <div class="answer-container"><div class="answer">ALU</div></div>
+            </div>
+            <div class="tile quiz-tile tile-2">
+                <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+                <p>Question 8:<br><br>True or False: Computers get tired very easily.</p>
+                <div class="answer-container"><div class="answer">False!</div></div>
+            </div>
+            <div class="tile quiz-tile tile-3">
+                <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+                <p>Question 9:<br><br>What does the "O" in the IPO cycle stand for?</p>
+                <div class="answer-container"><div class="answer">Output</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="nav-hint">➔</div>
+</div>
+
+<!-- Slide 13: Conclusion -->
+<div class="slide-container bg-purple" id="slide13">
+    <div class="blob blob-1" style="background: #fbbf24;"></div>
+    <div class="blob blob-2" style="background: #a78bfa;"></div>
+    <div class="title-layout">
+        <h1 style="font-size: 100px;">Keep Learning! 🌟</h1>
+        <p class="subtitle">You are a smart learner, just like a smart machine!</p>
+    </div>
+    <div class="nav-hint">End of Presentation</div>
+</div>
+
+<script>
+    // Javascript to make it work like a real PowerPoint
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide-container');
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            if (i === index) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+    }
+
+    // Keyboard controls (Left/Right Arrows and Spacebar)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            currentSlide = Math.min(currentSlide + 1, slides.length - 1);
+            showSlide(currentSlide);
+            e.preventDefault(); // Stop spacebar from scrolling page down
+        } else if (e.key === 'ArrowLeft') {
+            currentSlide = Math.max(currentSlide - 1, 0);
+            showSlide(currentSlide);
+        }
+    });
+
+    // Click to advance
+    document.body.addEventListener('click', () => {
+        currentSlide = Math.min(currentSlide + 1, slides.length - 1);
+        showSlide(currentSlide);
+    });
+</script>
+
+</body>
+</html>
